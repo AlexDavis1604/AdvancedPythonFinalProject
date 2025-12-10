@@ -133,3 +133,26 @@ class CryptoVisualizer:
         plt.title("Correlation of Cryptocurrency Daily Closing Prices", fontsize=14)
         plt.tight_layout()
         plt.show()
+
+    def plot_weekday_normalized_volume(self, avg_df):
+
+        days_order = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+        
+        # Reindex to guarantee order
+        avg_df = avg_df.reindex(days_order)
+
+        fig, ax = plt.subplots(figsize=(12, 6))
+
+        for col in avg_df.columns:
+            ax.plot(days_order, avg_df[col].values, marker='o', label=col, linewidth=1)
+
+        ax.set_title("Average Normalized Volume by Weekday")
+        ax.set_xlabel("Day of Week")
+        ax.set_ylabel("Average Normalized Volume")
+        ax.set_xticks(days_order)
+        ax.set_xticklabels(days_order, rotation=45)
+        ax.grid(True, linestyle='--', alpha=0.4)
+        ax.legend(loc='upper right', fontsize='small', ncol=2)
+
+        plt.tight_layout()
+        plt.show()
