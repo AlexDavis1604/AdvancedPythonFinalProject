@@ -75,11 +75,7 @@ def price_performance_comparison():
     s1 = df1.set_index('Date')['Close'].sort_index()
     s2 = df2.set_index('Date')['Close'].sort_index()
 
-    start = max(s1.index.min(), s2.index.min())
-    end = min(s1.index.max(), s2.index.max())
-
-    s1 = s1.loc[start:end]
-    s2 = s2.loc[start:end]
+    df1, df2 = df1.align(df2, join='inner')
 
     r1 = s1.pct_change() * 100
     r2 = s2.pct_change() * 100
@@ -116,17 +112,13 @@ def price_chart_comparison():
     df1 = df1.set_index('Date')['Close'].sort_index()
     df2 = df2.set_index('Date')['Close'].sort_index()
 
-    start = max(df1.index.min(), df2.index.min())
-    end = min(df1.index.max(), df2.index.max())
-
-    df1 = df1.loc[start:end]
-    df2 = df2.loc[start:end]
-
+    df1, df2 = df1.align(df2, join='inner')
+ 
     # Normalize both series to start at 1.0 (so comparisons are relative)
     df1_norm = df1 / df1.iloc[0]
     df2_norm = df2 / df2.iloc[0]
 
-    # Plot natural-log of normalized prices so both series start at 0
+    # Plot natural-log of normalized prices
     # Useful for daily data but can cause problems when working on a smaller time frame
     log1 = np.log(df1_norm)
     log2 = np.log(df2_norm)
