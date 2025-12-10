@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 
 class CryptoVisualizer:
 
@@ -52,5 +53,83 @@ class CryptoVisualizer:
         plt.xlabel("Date")
         plt.ylabel("Volume")
         plt.legend()
+        plt.tight_layout()
+        plt.show()
+    
+    def plot_volume_vs_price(self, dates, symbol, asset_prices, asset_volume):
+        plt.figure(figsize=(12,6))
+
+        ax1 = plt.gca()
+        ax1.plot(dates, asset_prices, color='blue', label='Close Price')
+        ax1.set_xlabel("Date")
+        ax1.set_ylabel("Price (USD)", color='blue')
+        ax1.tick_params(axis='y', labelcolor='blue')
+
+        # --- Secondary axis: Volume (bars) ---
+        ax2 = ax1.twinx()
+        ax2.bar(dates, asset_volume, color='gray', width=1.0, alpha=0.6, label='Volume')
+        ax2.set_ylabel("Volume", color='gray')
+        ax2.tick_params(axis='y', labelcolor='gray')
+
+        # Title + grid
+        plt.title(f"{symbol} — Price vs Volume Over Time")
+        ax1.grid(True, linestyle='--', alpha=0.5)
+
+        plt.tight_layout()
+        plt.show()
+
+    def plot_compare_volatility(self, dates, vol1, vol2, asset1_symbol, asset2_symbol, window=30):
+        plt.figure(figsize=(12,6))
+
+        plt.plot(dates, vol1, label=f"{asset1_symbol} ({window}-day)")
+        plt.plot(dates, vol2, label=f"{asset2_symbol} ({window}-day)")
+
+        plt.title(f"Rolling {window}-Day Annualized Volatility: {asset1_symbol} vs {asset2_symbol}")
+        plt.xlabel("Date")
+        plt.ylabel("Annualized Volatility (%)")
+        plt.legend()
+        plt.grid(True, linestyle='--', alpha=0.5)
+        plt.tight_layout()
+        plt.show()
+
+    def plot_crypto_correlation_heatmap(self, price_matrix):
+        symbols = price_matrix.columns.tolist()
+
+        # Convert to numpy
+        aligned = price_matrix.values
+
+        # Compute correlation matrix
+        corr_matrix = np.corrcoef(aligned.T).round(2)
+
+        n = len(symbols)
+
+        fig, ax = plt.subplots(figsize=(10, 8))
+
+        # Create heatmap
+        im = ax.imshow(corr_matrix, cmap="Spectral", vmin=-1, vmax=1)
+
+        # Axis labels
+        ax.set_xticks(np.arange(n))
+        ax.set_yticks(np.arange(n))
+        ax.set_xticklabels(symbols, rotation=45, ha="right", rotation_mode='anchor')
+        ax.set_yticklabels(symbols)
+
+        ax.set_ylim(n - 0.5, -0.5)
+
+        # Annotate cells
+        for i in range(n):
+            for j in range(n):
+                val = corr_matrix[i, j]
+                ax.text(
+                    j, i, f"{val:.2f}",
+                    ha='center', va='center',
+                    color='black' if abs(val) < 0.7 else 'white',
+                    fontsize='8'
+                )
+
+        cbar = ax.figure.colorbar(im, ax=ax, format='%.2f')
+        cbar.set_label("Correlation", rotation=270, labelpad=15)
+
+        plt.title("Correlation of Cryptocurrency Daily Closing Prices", fontsize=14)
         plt.tight_layout()
         plt.show()
