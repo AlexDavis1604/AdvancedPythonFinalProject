@@ -56,7 +56,12 @@ def recursive_menu():
 
 def correlation_heatmap():
     price_matrix = analyzer.align_datasets(join='inner')
-    viz.plot_crypto_correlation_heatmap(price_matrix)
+    try:
+        viz.plot_crypto_correlation_heatmap(price_matrix)
+    except Exception as e:
+        print(f"Error plotting correlation heatmap: {e}")
+
+    recursive_menu()
 
 def price_volume_comparison():
     print('\nOptions:')
@@ -79,7 +84,10 @@ def price_volume_comparison():
     prices = prices_series.values
     volume = df['Volume'].values
 
-    viz.plot_volume_vs_price(dates, symbol_name, prices, volume)
+    try:
+        viz.plot_volume_vs_price(dates, symbol_name, prices, volume)
+    except Exception as e:
+        print(f"Error plotting volume vs price: {e}")
 
     recursive_menu()
 
@@ -102,7 +110,10 @@ def price_chart():
     dates = prices_series.index
     prices = prices_series.values
 
-    viz.plot_price(dates, symbol_name, prices)
+    try:
+        viz.plot_price(dates, symbol_name, prices)
+    except Exception as e:
+        print(f"Error plotting price chart: {e}")
 
     recursive_menu()
 
@@ -134,7 +145,10 @@ def price_performance_comparison():
     asset1_vals = r1.values
     asset2_vals = r2.values
 
-    viz.plot_compare_asset_performance(dates, asset1_vals, asset2_vals, symbol1, symbol2)
+    try:
+        viz.plot_compare_asset_performance(dates, asset1_vals, asset2_vals, symbol1, symbol2)
+    except Exception as e:
+        print(f"Error plotting asset performance comparison: {e}")
 
     recursive_menu()
 
@@ -176,7 +190,10 @@ def volatility_comparison():
 
     dates = vol1.index
 
-    viz.plot_compare_volatility(dates, vol1.values, vol2.values, symbol1, symbol2, window)
+    try:
+        viz.plot_compare_volatility(dates, vol1.values, vol2.values, symbol1, symbol2, window)
+    except Exception as e:
+        print(f"Error plotting volatility comparison: {e}")
 
     recursive_menu()
 
@@ -191,11 +208,11 @@ def weekday_normalized_volume():
         # Filter out non-positive
         vol = df_local[pd.to_numeric(df_local['Volume'], errors='coerce') > 0]
         
-        rolling_med = vol.rolling(30).median()
+        rolling_med = vol['Volume'].rolling(30).median()
 
         # Avoid division by zero or inf by converting zero medians to NaN
         rolling_med = rolling_med.replace(0, np.nan)
-        vol_norm = np.log(vol / rolling_med)
+        vol_norm = np.log(vol['Volume'] / rolling_med)
 
         # Only keep rows where vol_norm is finite
         valid = vol_norm.replace([np.inf, -np.inf], np.nan).dropna()
@@ -215,7 +232,10 @@ def weekday_normalized_volume():
 
     avg_df = pd.DataFrame(series_dict)
 
-    viz.plot_weekday_normalized_volume(avg_df)
+    try:
+        viz.plot_weekday_normalized_volume(avg_df)
+    except Exception as e:
+        print(f"Error plotting weekday normalized volume: {e}")
 
     recursive_menu()
             
@@ -252,7 +272,10 @@ def price_chart_comparison():
 
     dates = s1.index
 
-    viz.plot_compare_log_price(dates, log1.values, log2.values, symbol1, symbol2)
+    try:
+        viz.plot_compare_log_price(dates, log1.values, log2.values, symbol1, symbol2)
+    except Exception as e:
+        print(f"Error plotting log price comparison: {e}")
 
     recursive_menu()
 
@@ -274,11 +297,12 @@ def volume_chart():
     dates = df['Date']
     volume = df['Volume']
 
-    viz.plot_volume_barchart(dates, symbol, volume)
+    try:
+        viz.plot_volume_barchart(dates, symbol, volume)
+    except Exception as e:
+        print(f"Error plotting volume chart: {e}")
 
     recursive_menu()
-
-
 
 def main():
     # print(f'Loaded datasets: {', '.join(sorted(datasets.keys()))}')
